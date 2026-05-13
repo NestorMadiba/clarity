@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pago confirmado — Clarity</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="hero-bg" style="position:fixed;inset:0;pointer-events:none;">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+  </div>
+  <main style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:40px 24px;position:relative;">
+    <div style="text-align:center;max-width:480px;">
+      <div style="font-size:3.5rem;margin-bottom:24px;animation:rotate-slow 4s linear infinite;display:inline-block;">◈</div>
+      <h1 style="font-family:var(--font-display);font-size:2.5rem;font-weight:300;margin-bottom:16px;">
+        ¡Tu pago fue confirmado!
+      </h1>
+      <p style="color:var(--c-muted);font-size:1rem;margin-bottom:8px;line-height:1.7;">
+        Bienvenido/a a Clarity Premium.<br />
+        Tu mente está a punto de despertar.
+      </p>
+      <p style="color:var(--c-accent);font-family:var(--font-display);font-style:italic;font-size:1.1rem;margin-bottom:36px;">
+        "La claridad cambia todo."
+      </p>
+      <a href="dashboard.html" class="btn-primary btn-large">
+        <span>Ir a mi espacio</span>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="config.js"></script>
+  <script>
+    // As a fallback, try to mark user as paid from the frontend
+    // (the webhook should have already done it)
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    supabaseClient.auth.getSession().then(async ({ data }) => {
+      if (data.session) {
+        // Small delay to let webhook process first
+        setTimeout(async () => {
+          await supabaseClient
+            .from('profiles')
+            .update({ has_paid: true })
+            .eq('id', data.session.user.id);
+        }, 2000);
+      }
+    });
+  </script>
+</body>
+</html>
