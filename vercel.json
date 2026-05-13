@@ -1,4 +1,12 @@
 {
+  "functions": {
+    "api/hello.js": {
+      "runtime": "node@20"
+    }
+  }
+}
+
+{
   "version": 2,
   "buildCommand": "echo 'No build needed'",
   "outputDirectory": ".",
