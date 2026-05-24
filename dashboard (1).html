@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mi espacio — Clarity</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <nav class="nav scrolled">
+    <div class="nav-inner">
+      <a href="index.html" class="logo">
+        <img src="logo.png" alt="Clarity" class="logo-img" />
+      </a>
+    </div>
+  </nav>
+
+  <!-- Loading -->
+  <div id="loadingState" style="min-height:100vh;display:flex;align-items:center;justify-content:center;">
+    <div style="text-align:center;color:var(--c-muted);">
+      <img src="logo.png" alt="Clarity" style="height:52px;margin-bottom:16px;animation:glowPulse 1.5s ease-in-out infinite;" />
+      <p style="font-size:0.9rem;">Cargando tu espacio…</p>
+    </div>
+  </div>
+
+  <div class="dashboard" id="app" style="display:none;">
+
+    <div class="dashboard-header" style="margin-top:64px;">
+      <div class="dashboard-nav">
+        <div class="dashboard-tabs">
+          <button class="tab-btn active" data-tab="inicio">Inicio</button>
+          <button class="tab-btn" data-tab="contenido">Contenido</button>
+          <button class="tab-btn" data-tab="admin" id="adminTabBtn" style="display:none;">
+            ⚙️ Admin
+          </button>
+        </div>
+        <div class="dashboard-user">
+          <span id="userName" style="font-size:0.85rem;"></span>
+          <span id="adminBadge" style="display:none;font-size:0.7rem;background:rgba(0,174,239,0.15);color:var(--c-cyan);border:1px solid rgba(0,174,239,0.3);border-radius:100px;padding:3px 10px;letter-spacing:0.08em;">ADMIN</span>
+          <button class="btn-logout" id="logoutBtn">Salir</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="dashboard-content">
+
+      <!-- TAB INICIO -->
+      <div class="tab-panel active" id="tab-inicio">
+        <div class="welcome-banner">
+          <div>
+            <h2>Hola, <span id="welcomeName">—</span> 👋</h2>
+            <p id="welcomeSub">Esta es tu área personal de transformación.</p>
+          </div>
+          <div id="payStatusBadge"></div>
+        </div>
+
+        <h3 style="font-family:var(--font-display);font-size:1.2rem;font-weight:400;margin-bottom:20px;color:var(--c-muted);letter-spacing:0.02em;">Contenido gratuito</h3>
+        <div class="content-grid" style="margin-bottom:48px;">
+          <div class="content-card">
+            <div class="content-card-icon">🧠</div>
+            <h4>¿Qué es la claridad mental?</h4>
+            <p>Introducción a los principios fundamentales que guían el programa Clarity.</p>
+            <span class="tag-free">Gratis</span>
+          </div>
+          <div class="content-card">
+            <div class="content-card-icon">🔍</div>
+            <h4>El diagnóstico de tu mente</h4>
+            <p>Un ejercicio rápido para identificar tus bloqueos mentales actuales.</p>
+            <span class="tag-free">Gratis</span>
+          </div>
+          <div class="content-card">
+            <div class="content-card-icon">📖</div>
+            <h4>Lectura recomendada</h4>
+            <p>Los 3 libros que cambiaron la perspectiva del fundador de Clarity.</p>
+            <span class="tag-free">Gratis</span>
+          </div>
+        </div>
+
+        <div id="premiumSection"></div>
+      </div>
+
+      <!-- TAB CONTENIDO -->
+      <div class="tab-panel" id="tab-contenido">
+        <div id="contentSection"></div>
+      </div>
+
+      <!-- TAB ADMIN -->
+      <div class="tab-panel" id="tab-admin">
+
+        <!-- Resumen rápido -->
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;margin-bottom:40px;" id="adminStats">
+          <div class="content-card" style="text-align:center;">
+            <div style="font-family:var(--font-display);font-size:3rem;font-weight:300;color:var(--c-cyan);" id="statTotal">—</div>
+            <div style="font-size:0.82rem;color:var(--c-muted);margin-top:4px;">Usuarios totales</div>
+          </div>
+          <div class="content-card" style="text-align:center;">
+            <div style="font-family:var(--font-display);font-size:3rem;font-weight:300;color:var(--c-blue);" id="statPaid">—</div>
+            <div style="font-size:0.82rem;color:var(--c-muted);margin-top:4px;">Usuarios premium</div>
+          </div>
+          <div class="content-card" style="text-align:center;">
+            <div style="font-family:var(--font-display);font-size:3rem;font-weight:300;color:#4ade80;" id="statFree">—</div>
+            <div style="font-size:0.82rem;color:var(--c-muted);margin-top:4px;">Usuarios gratuitos</div>
+          </div>
+        </div>
+
+        <!-- Subir contenido -->
+        <div class="admin-section">
+          <h3>📄 Subir contenido premium</h3>
+          <div class="upload-zone" id="uploadZone">
+            <input type="file" id="pdfFile" accept=".pdf,.doc,.docx" />
+            <div class="upload-icon">📄</div>
+            <p><strong>Arrastrá un archivo o hacé click aquí</strong><br />PDF, DOC, DOCX hasta 20MB</p>
+          </div>
+          <div id="uploadStatus" style="margin-top:12px;font-size:0.875rem;color:var(--c-cyan);display:none;padding:10px 16px;background:rgba(0,174,239,0.06);border-radius:8px;border:1px solid rgba(0,174,239,0.15);"></div>
+          <div style="margin-top:20px;display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+            <div class="form-group" style="margin:0;">
+              <label for="contentTitle">Título del contenido</label>
+              <input type="text" id="contentTitle" placeholder="Ej: Módulo 3 — Perspectiva financiera" />
+            </div>
+            <div class="form-group" style="margin:0;">
+              <label for="contentDesc">Descripción breve</label>
+              <input type="text" id="contentDesc" placeholder="Descripción corta" />
+            </div>
+          </div>
+          <button class="btn-primary" id="uploadBtn" type="button" style="margin-top:16px;">
+            <span>Subir contenido</span>
+          </button>
+        </div>
+
+        <!-- Enviar a usuario -->
+        <div class="admin-section">
+          <h3>📬 Enviar recurso a usuario</h3>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+            <div class="form-group" style="margin:0;">
+              <label for="recipientEmail">Email del usuario</label>
+              <input type="email" id="recipientEmail" placeholder="usuario@email.com" />
+            </div>
+            <div class="form-group" style="margin:0;">
+              <label for="recipientPhone">WhatsApp (con código país)</label>
+              <input type="tel" id="recipientPhone" placeholder="+54911XXXXXXXX" />
+            </div>
+          </div>
+          <div style="display:flex;gap:12px;margin-top:16px;flex-wrap:wrap;">
+            <button class="btn-secondary" id="sendEmailBtn" type="button">📧 Enviar por Email</button>
+            <button class="btn-secondary" id="sendWhatsappBtn" type="button">💬 Enviar por WhatsApp</button>
+          </div>
+          <div id="sendStatus" style="margin-top:12px;font-size:0.875rem;display:none;padding:10px 16px;background:rgba(0,174,239,0.06);border-radius:8px;border:1px solid rgba(0,174,239,0.15);color:var(--c-cyan);"></div>
+        </div>
+
+        <!-- Lista de usuarios -->
+        <div class="admin-section">
+          <h3>👥 Usuarios registrados</h3>
+          <div id="usersList">
+            <div style="color:var(--c-muted);font-size:0.875rem;padding:20px 0;">Cargando usuarios…</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="config.js"></script>
+  <script>
+    const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    let currentUser = null;
+    let userProfile = null;
+
+    // ── INIT ─────────────────────────────────────────────
+    async function init() {
+      const { data: { session }, error: sessionErr } = await sb.auth.getSession();
+
+      if (!session) {
+        window.location.href = 'login.html';
+        return;
+      }
+
+      currentUser = session.user;
+
+      // Cargar perfil con reintento (puede tardar si acaba de crearse)
+      let profile = null;
+      for (let i = 0; i < 3; i++) {
+        const { data, error } = await sb
+          .from('profiles')
+          .select('*')
+          .eq('id', currentUser.id)
+          .single();
+
+        if (data) { profile = data; break; }
+        if (error && error.code !== 'PGRST116') {
+          console.error('Error cargando perfil:', error);
+          break;
+        }
+        await new Promise(r => setTimeout(r, 800));
+      }
+
+      // Si no existe perfil, crearlo
+      if (!profile) {
+        const { data: newProfile } = await sb.from('profiles').upsert({
+          id: currentUser.id,
+          email: currentUser.email,
+          full_name: currentUser.user_metadata?.full_name || currentUser.email.split('@')[0],
+          has_paid: false,
+          is_admin: false
+        }).select().single();
+        profile = newProfile || {};
+      }
+
+      userProfile = profile;
+
+      console.log('Perfil cargado:', {
+        email: userProfile.email,
+        is_admin: userProfile.is_admin,
+        has_paid: userProfile.has_paid
+      });
+
+      const name = userProfile.full_name || currentUser.email.split('@')[0];
+      document.getElementById('userName').textContent = name;
+      document.getElementById('welcomeName').textContent = name;
+
+      // ── MOSTRAR PANEL ADMIN ──────────────────────────
+      if (userProfile.is_admin === true) {
+        document.getElementById('adminTabBtn').style.display = 'inline-block';
+        document.getElementById('adminBadge').style.display = 'inline-block';
+        document.getElementById('welcomeSub').textContent =
+          'Bienvenido al panel de administración. Usá la pestaña Admin para gestionar el contenido.';
+        loadAdminData();
+      }
+
+      renderPremiumSection();
+      renderContentTab();
+
+      document.getElementById('loadingState').style.display = 'none';
+      document.getElementById('app').style.display = 'block';
+    }
+
+    // ── PREMIUM GATE ────────────────────────────────────
+    function renderPremiumSection() {
+      const hasPaid = userProfile.has_paid;
+      const el = document.getElementById('premiumSection');
+      const badge = document.getElementById('payStatusBadge');
+
+      if (hasPaid || userProfile.is_admin) {
+        badge.innerHTML = `<span class="tag-premium" style="font-size:0.8rem;padding:6px 16px;">✓ Premium activo</span>`;
+        el.innerHTML = `
+          <h3 style="font-family:var(--font-display);font-size:1.2rem;font-weight:400;margin-bottom:20px;color:var(--c-cyan);">Contenido Premium</h3>
+          ${premiumCards()}`;
+      } else {
+        badge.innerHTML = `<span class="tag-free" style="font-size:0.8rem;padding:6px 16px;">Plan gratuito</span>`;
+        el.innerHTML = `
+          <div class="lock-banner">
+            <div class="lock-icon">🔒</div>
+            <h3>Desbloqueá el contenido completo</h3>
+            <p>Por $9/mes accedés a todos los módulos, PDFs y recursos exclusivos de Clarity.</p>
+            <button class="btn-primary" id="payBtn" type="button">
+              <span>Suscribirme ahora — $9/mes</span>
+            </button>
+            <p style="margin-top:16px;font-size:0.78rem;color:var(--c-muted);opacity:0.7;">Podés cancelar cuando quieras.</p>
+          </div>`;
+        document.getElementById('payBtn').addEventListener('click', initPago);
+      }
+    }
+
+    function renderContentTab() {
+      const hasPaid = userProfile.has_paid || userProfile.is_admin;
+      const el = document.getElementById('contentSection');
+      if (hasPaid) {
+        el.innerHTML = `
+          <h3 style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;margin-bottom:24px;">Todos los módulos</h3>
+          ${premiumCards()}`;
+      } else {
+        el.innerHTML = `
+          <div class="lock-banner">
+            <div class="lock-icon">🔒</div>
+            <h3>Sección para miembros</h3>
+            <p>Activá tu suscripción para acceder a todos los módulos.</p>
+            <button class="btn-primary" id="payBtn2" type="button">Activar suscripción</button>
+          </div>`;
+        document.getElementById('payBtn2')?.addEventListener('click', initPago);
+      }
+    }
+
+    function premiumCards() {
+      const modulos = [
+        { icon:'💡', title:'Módulo 1 — El despertar', desc:'Cómo tu relación con el dinero fue moldeada y cómo cambiarla.' },
+        { icon:'🧭', title:'Módulo 2 — Tu brújula interna', desc:'Identificá tus valores reales y alineá tus decisiones.' },
+        { icon:'💼', title:'Módulo 3 — Perspectiva financiera', desc:'Ver el dinero como energía, no como escasez.' },
+        { icon:'🚀', title:'Módulo 4 — Acción mínima viable', desc:'El sistema para avanzar sin abrumarte.' },
+        { icon:'🛡️', title:'Módulo 5 — Blindaje mental', desc:'Cómo proteger tu mente de voces que te limitan.' },
+        { icon:'📊', title:'Módulo 6 — Hábitos de alto impacto', desc:'Los únicos 3 hábitos que realmente importan.' },
+      ];
+      return `<div class="content-grid">${modulos.map(m => `
+        <div class="content-card">
+          <div class="content-card-icon">${m.icon}</div>
+          <h4>${m.title}</h4>
+          <p>${m.desc}</p>
+          <span class="tag-premium">Premium</span>
+        </div>`).join('')}</div>`;
+    }
+
+    // ── PAGO ────────────────────────────────────────────
+    async function initPago() {
+      try {
+        const res = await fetch('/api/create-payment', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId: currentUser.id, userEmail: currentUser.email })
+        });
+        const data = await res.json();
+        if (data.init_point) {
+          window.location.href = data.init_point;
+        } else {
+          alert('No se pudo iniciar el pago: ' + (data.error || 'Error desconocido'));
+        }
+      } catch (e) {
+        alert('Error al conectar con el servicio de pago: ' + e.message);
+      }
+    }
+
+    // ── LOGOUT ──────────────────────────────────────────
+    document.getElementById('logoutBtn').addEventListener('click', async () => {
+      await sb.auth.signOut();
+      window.location.href = 'index.html';
+    });
+
+    // ── TABS ────────────────────────────────────────────
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+      });
+    });
+
+    // ── ADMIN: Cargar datos ──────────────────────────────
+    async function loadAdminData() {
+      const { data: users, error } = await sb
+        .from('profiles')
+        .select('id, full_name, email, has_paid, is_admin, created_at')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error cargando usuarios:', error);
+        document.getElementById('usersList').innerHTML =
+          `<p style="color:#ff9999;">Error al cargar usuarios: ${error.message}</p>`;
+        return;
+      }
+
+      const total  = users?.length || 0;
+      const paid   = users?.filter(u => u.has_paid).length || 0;
+      const free   = total - paid;
+
+      document.getElementById('statTotal').textContent = total;
+      document.getElementById('statPaid').textContent  = paid;
+      document.getElementById('statFree').textContent  = free;
+
+      if (!users || !users.length) {
+        document.getElementById('usersList').innerHTML = '<p style="color:var(--c-muted);">Sin usuarios aún.</p>';
+        return;
+      }
+
+      document.getElementById('usersList').innerHTML = `
+        <div style="overflow-x:auto;">
+          <table style="width:100%;border-collapse:collapse;font-size:0.85rem;">
+            <thead>
+              <tr style="border-bottom:1px solid var(--c-border);">
+                <th style="padding:10px 14px;color:var(--c-muted);font-weight:400;text-align:left;">Nombre</th>
+                <th style="padding:10px 14px;color:var(--c-muted);font-weight:400;text-align:left;">Email</th>
+                <th style="padding:10px 14px;color:var(--c-muted);font-weight:400;text-align:left;">Estado</th>
+                <th style="padding:10px 14px;color:var(--c-muted);font-weight:400;text-align:left;">Rol</th>
+                <th style="padding:10px 14px;color:var(--c-muted);font-weight:400;text-align:left;">Fecha</th>
+                <th style="padding:10px 14px;color:var(--c-muted);font-weight:400;text-align:left;">Acción</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${users.map(u => `
+                <tr style="border-bottom:1px solid var(--c-border);transition:background 0.2s;" onmouseover="this.style.background='rgba(0,174,239,0.03)'" onmouseout="this.style.background=''">
+                  <td style="padding:12px 14px;">${u.full_name || '—'}</td>
+                  <td style="padding:12px 14px;color:var(--c-muted);">${u.email}</td>
+                  <td style="padding:12px 14px;">
+                    ${u.has_paid
+                      ? '<span class="tag-premium">Premium</span>'
+                      : '<span class="tag-free">Gratis</span>'}
+                  </td>
+                  <td style="padding:12px 14px;">
+                    ${u.is_admin
+                      ? '<span style="font-size:0.7rem;color:var(--c-cyan);letter-spacing:0.08em;">ADMIN</span>'
+                      : '<span style="font-size:0.7rem;color:var(--c-muted);">Usuario</span>'}
+                  </td>
+                  <td style="padding:12px 14px;color:var(--c-muted);font-size:0.8rem;">
+                    ${new Date(u.created_at).toLocaleDateString('es-AR')}
+                  </td>
+                  <td style="padding:12px 14px;">
+                    ${!u.has_paid
+                      ? `<button onclick="activarPremium('${u.id}')" style="background:rgba(0,174,239,0.1);color:var(--c-cyan);border:1px solid rgba(0,174,239,0.2);border-radius:6px;padding:4px 12px;font-size:0.75rem;cursor:pointer;font-family:var(--font-body);">Activar premium</button>`
+                      : `<button onclick="desactivarPremium('${u.id}')" style="background:rgba(255,107,107,0.08);color:#ff9999;border:1px solid rgba(255,107,107,0.2);border-radius:6px;padding:4px 12px;font-size:0.75rem;cursor:pointer;font-family:var(--font-body);">Revocar</button>`}
+                  </td>
+                </tr>`).join('')}
+            </tbody>
+          </table>
+        </div>`;
+    }
+
+    // Activar/desactivar premium manualmente desde admin
+    async function activarPremium(userId) {
+      const { error } = await sb.from('profiles')
+        .update({ has_paid: true, paid_at: new Date().toISOString() })
+        .eq('id', userId);
+      if (!error) { alert('✓ Premium activado'); loadAdminData(); }
+      else alert('Error: ' + error.message);
+    }
+    async function desactivarPremium(userId) {
+      if (!confirm('¿Revocar acceso premium a este usuario?')) return;
+      const { error } = await sb.from('profiles')
+        .update({ has_paid: false })
+        .eq('id', userId);
+      if (!error) { alert('✓ Premium revocado'); loadAdminData(); }
+      else alert('Error: ' + error.message);
+    }
+
+    // ── ADMIN: Upload PDF ────────────────────────────────
+    const uploadZone = document.getElementById('uploadZone');
+    uploadZone.addEventListener('click', () => document.getElementById('pdfFile').click());
+    uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.style.borderColor = 'var(--c-blue)'; });
+    uploadZone.addEventListener('dragleave', () => { uploadZone.style.borderColor = ''; });
+    uploadZone.addEventListener('drop', e => {
+      e.preventDefault(); uploadZone.style.borderColor = '';
+      if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
+    });
+    document.getElementById('pdfFile').addEventListener('change', e => {
+      if (e.target.files[0]) handleFile(e.target.files[0]);
+    });
+
+    let selectedFile = null;
+    function handleFile(file) {
+      selectedFile = file;
+      const el = document.getElementById('uploadStatus');
+      el.textContent = `✓ Archivo seleccionado: ${file.name} (${(file.size/1024/1024).toFixed(2)} MB)`;
+      el.style.display = 'block';
+    }
+
+    document.getElementById('uploadBtn').addEventListener('click', async () => {
+      if (!selectedFile) { alert('Seleccioná un archivo primero.'); return; }
+      const title = document.getElementById('contentTitle').value.trim();
+      if (!title) { alert('Ingresá un título para el contenido.'); return; }
+      const desc = document.getElementById('contentDesc').value.trim();
+      const btn = document.getElementById('uploadBtn');
+      btn.disabled = true;
+      btn.querySelector('span').textContent = 'Subiendo…';
+
+      const filePath = `content/${Date.now()}_${selectedFile.name}`;
+      const { error: upErr } = await sb.storage.from('clarity-content').upload(filePath, selectedFile);
+      if (upErr) {
+        alert('Error al subir: ' + upErr.message);
+        btn.disabled = false; btn.querySelector('span').textContent = 'Subir contenido';
+        return;
+      }
+      const { data: urlData } = sb.storage.from('clarity-content').getPublicUrl(filePath);
+      await sb.from('content_items').insert({ title, description: desc, file_url: urlData.publicUrl, file_name: selectedFile.name, is_premium: true, created_at: new Date().toISOString() });
+      document.getElementById('uploadStatus').textContent = '✓ Contenido subido exitosamente.';
+      btn.disabled = false; btn.querySelector('span').textContent = 'Subir contenido';
+      selectedFile = null;
+      document.getElementById('contentTitle').value = '';
+      document.getElementById('contentDesc').value = '';
+    });
+
+    // ── ADMIN: Enviar ────────────────────────────────────
+    document.getElementById('sendEmailBtn').addEventListener('click', async () => {
+      const email = document.getElementById('recipientEmail').value.trim();
+      if (!email) { alert('Ingresá un email.'); return; }
+      document.getElementById('sendEmailBtn').disabled = true;
+      const statusEl = document.getElementById('sendStatus');
+      try {
+        const res = await fetch('/api/send-email', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ to: email, type:'content' }) });
+        const d = await res.json();
+        statusEl.textContent = d.ok ? '✓ Email enviado correctamente.' : '✗ Error: ' + d.error;
+        statusEl.style.color = d.ok ? 'var(--c-cyan)' : '#ff9999';
+        statusEl.style.display = 'block';
+      } catch(e) { statusEl.textContent = '✗ Error de conexión.'; statusEl.style.display = 'block'; }
+      document.getElementById('sendEmailBtn').disabled = false;
+    });
+
+    document.getElementById('sendWhatsappBtn').addEventListener('click', async () => {
+      const phone = document.getElementById('recipientPhone').value.trim();
+      if (!phone) { alert('Ingresá un número de WhatsApp.'); return; }
+      document.getElementById('sendWhatsappBtn').disabled = true;
+      const statusEl = document.getElementById('sendStatus');
+      try {
+        const res = await fetch('/api/send-whatsapp', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ phone, type:'content' }) });
+        const d = await res.json();
+        statusEl.textContent = d.ok ? '✓ Mensaje de WhatsApp enviado.' : '✗ Error: ' + d.error;
+        statusEl.style.color = d.ok ? 'var(--c-cyan)' : '#ff9999';
+        statusEl.style.display = 'block';
+      } catch(e) { statusEl.textContent = '✗ Error de conexión.'; statusEl.style.display = 'block'; }
+      document.getElementById('sendWhatsappBtn').disabled = false;
+    });
+
+    init();
+  </script>
+</body>
+</html>
