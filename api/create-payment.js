@@ -30,7 +30,7 @@ module.exports = async function handler(req, res) {
         title: 'Clarity Premium',
         quantity: 1,
         currency_id: 'ARS',
-        unit_price: 9
+        unit_price: 3000
       }
     ],
     payer: { email: userEmail },
