@@ -45,18 +45,7 @@
 
     <div class="dashboard-content">
 
-      <!-- Panel de diagnóstico — solo visible si hay problema -->
-      <div id="debugPanel" style="display:none;background:rgba(255,200,0,0.06);border:1px solid rgba(255,200,0,0.25);border-radius:12px;padding:20px;margin-bottom:24px;">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-          <strong style="color:#ffd966;font-size:0.875rem;">🔍 Diagnóstico de sesión</strong>
-          <button onclick="document.getElementById('debugPanel').style.display='none'" style="background:none;border:none;color:var(--c-muted);cursor:pointer;font-size:1.1rem;">✕</button>
-        </div>
-        <div id="debugContent" style="font-size:0.8rem;color:var(--c-muted);line-height:2;font-family:monospace;"></div>
-        <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap;">
-          <button onclick="forceReloadProfile()" class="btn-secondary" style="font-size:0.8rem;padding:8px 14px;">🔄 Recargar perfil</button>
-          <button onclick="forceAdminSQL()" class="btn-secondary" style="font-size:0.8rem;padding:8px 14px;">🛠️ Verificar is_admin en DB</button>
-        </div>
-      </div>
+  
 
       <!-- TAB INICIO -->
       <div class="tab-panel active" id="tab-inicio">
