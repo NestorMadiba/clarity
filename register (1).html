@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Registro — Clarity</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <nav class="nav scrolled" id="nav">
+    <div class="nav-inner">
+      <a href="index.html" class="logo"><img src="logo.png" alt="Clarity" class="logo-img" /></a>
+    </div>
+  </nav>
+
+  <div class="hero-bg" style="position:fixed;inset:0;pointer-events:none;z-index:0;">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+  </div>
+
+  <main class="auth-page">
+    <div class="auth-card" style="position:relative;z-index:1;">
+      <div class="auth-logo">
+        <a href="index.html" class="logo"><img src="logo.png" alt="Clarity" class="logo-img" /></a>
+      </div>
+      <h2>Crear cuenta</h2>
+      <p class="auth-sub">Tu transformación comienza aquí.</p>
+
+      <div class="msg msg-error" id="errorMsg"></div>
+      <div class="msg msg-success" id="successMsg"></div>
+
+      <div id="registerForm">
+        <div class="form-group">
+          <label for="name">Nombre completo</label>
+          <input type="text" id="name" placeholder="Tu nombre" autocomplete="name" />
+          <span class="field-error" id="nameError">Por favor ingresá tu nombre.</span>
+        </div>
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" placeholder="tu@email.com" autocomplete="email" />
+          <span class="field-error" id="emailError">Email inválido.</span>
+        </div>
+        <div class="form-group">
+          <label for="password">Contraseña</label>
+          <input type="password" id="password" placeholder="Mínimo 8 caracteres" autocomplete="new-password" />
+          <span class="field-error" id="passwordError">Mínimo 8 caracteres.</span>
+        </div>
+        <div class="form-group">
+          <label for="phone">WhatsApp (opcional)</label>
+          <input type="tel" id="phone" placeholder="+54 9 11 1234-5678" autocomplete="tel" />
+        </div>
+
+        <button class="btn-primary btn-block" id="registerBtn" type="button">
+          <span id="registerBtnText">Crear cuenta gratis</span>
+        </button>
+
+        <p class="auth-footer" style="margin-top:20px;font-size:0.78rem;color:var(--c-muted);">
+          Al registrarte aceptás nuestros <a href="legal.html">Términos y condiciones</a>.
+        </p>
+      </div>
+
+      <p class="auth-footer">¿Ya tenés cuenta? <a href="login.html">Iniciar sesión</a></p>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="config.js"></script>
+  <script>
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    function showError(id, show) { document.getElementById(id).classList.toggle('show', show); }
+    function setInputError(id, has) { document.getElementById(id).classList.toggle('input-error', has); }
+    function showMsg(id, text) {
+      const el = document.getElementById(id);
+      el.textContent = text; el.classList.add('show');
+    }
+    function hideMsg(id) { document.getElementById(id).classList.remove('show'); }
+
+    document.getElementById('registerBtn').addEventListener('click', async () => {
+      hideMsg('errorMsg'); hideMsg('successMsg');
+
+      const name     = document.getElementById('name').value.trim();
+      const email    = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const phone    = document.getElementById('phone').value.trim();
+
+      // Validación
+      let valid = true;
+      if (!name)    { showError('nameError', true); setInputError('name', true); valid = false; }
+      else          { showError('nameError', false); setInputError('name', false); }
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        showError('emailError', true); setInputError('email', true); valid = false;
+      } else { showError('emailError', false); setInputError('email', false); }
+      if (password.length < 8) {
+        showError('passwordError', true); setInputError('password', true); valid = false;
+      } else { showError('passwordError', false); setInputError('password', false); }
+      if (!valid) return;
+
+      const btn = document.getElementById('registerBtn');
+      const btnText = document.getElementById('registerBtnText');
+      btn.disabled = true;
+      btnText.textContent = 'Creando cuenta…';
+
+      try {
+        // 1. Crear usuario en Supabase Auth
+        const { data, error } = await supabaseClient.auth.signUp({
+          email,
+          password,
+          options: { data: { full_name: name, phone: phone || null } }
+        });
+
+        if (error) throw error;
+
+        // 2. Crear perfil en la tabla profiles
+        // Usamos el trigger de Supabase como principal, pero también lo intentamos
+        // desde el frontend como respaldo
+        if (data.user) {
+          const { error: profileError } = await supabaseClient
+            .from('profiles')
+            .upsert({
+              id: data.user.id,
+              full_name: name,
+              email: email,
+              phone: phone || null,
+              has_paid: false,
+              is_admin: false,
+              created_at: new Date().toISOString()
+            }, { onConflict: 'id' });
+
+          // Si hay error de RLS en el insert del perfil, no bloqueamos el registro
+          // El trigger de Supabase lo va a crear igual
+          if (profileError) {
+            console.warn('Perfil no insertado desde frontend (lo hará el trigger):', profileError.message);
+          }
+        }
+
+        // 3. Mensaje de éxito y redirigir al login
+        showMsg('successMsg', '✓ ¡Cuenta creada exitosamente! Redirigiendo al login…');
+        document.getElementById('registerForm').style.opacity = '0.5';
+        document.getElementById('registerForm').style.pointerEvents = 'none';
+
+        // Redirigir al login después de 2 segundos
+        setTimeout(() => {
+          window.location.href = 'login.html';
+        }, 2000);
+
+      } catch (err) {
+        console.error('Error en registro:', err);
+
+        let msg = 'Error al crear la cuenta. Intentá de nuevo.';
+        if (err.message?.toLowerCase().includes('already registered') ||
+            err.message?.toLowerCase().includes('already been registered')) {
+          msg = 'Este email ya está registrado. <a href="login.html" style="color:var(--c-cyan);">Iniciá sesión</a>';
+          document.getElementById('errorMsg').innerHTML = msg;
+          document.getElementById('errorMsg').classList.add('show');
+        } else if (err.message?.toLowerCase().includes('password')) {
+          msg = 'La contraseña debe tener al menos 8 caracteres.';
+          showMsg('errorMsg', msg);
+        } else if (err.message?.toLowerCase().includes('invalid email')) {
+          msg = 'El formato del email no es válido.';
+          showMsg('errorMsg', msg);
+        } else if (err.message?.toLowerCase().includes('rate limit') ||
+                   err.message?.toLowerCase().includes('email rate')) {
+          msg = 'Demasiados intentos. Esperá unos minutos e intentá de nuevo.';
+          showMsg('errorMsg', msg);
+        } else {
+          showMsg('errorMsg', msg + ' (' + err.message + ')');
+        }
+
+        btn.disabled = false;
+        btnText.textContent = 'Crear cuenta gratis';
+      }
+    });
+
+    // Enter key
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Enter') document.getElementById('registerBtn').click();
+    });
+  </script>
+</body>
+</html>
