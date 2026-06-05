@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mi espacio — Clarity</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <nav class="nav scrolled">
+    <div class="nav-inner">
+      <a href="index.html" class="logo">
+        <img src="logo.png" alt="Clarity" class="logo-img" />
+      </a>
+    </div>
+  </nav>
+
+  <!-- Loading -->
+  <div id="loadingState" style="min-height:100vh;display:flex;align-items:center;justify-content:center;">
+    <div style="text-align:center;color:var(--c-muted);">
+      <img src="logo.png" alt="Clarity" style="height:52px;margin-bottom:16px;animation:glowPulse 1.5s ease-in-out infinite;" />
+      <p id="loadingMsg" style="font-size:0.9rem;">Verificando sesión…</p>
+    </div>
+  </div>
+
+  <div class="dashboard" id="app" style="display:none;">
+
+    <div class="dashboard-header" style="margin-top:64px;">
+      <div class="dashboard-nav">
+        <div class="dashboard-tabs">
+          <button class="tab-btn active" data-tab="inicio">Inicio</button>
+          <button class="tab-btn" data-tab="contenido">Contenido</button>
+          <button class="tab-btn" data-tab="admin" id="adminTabBtn" style="display:none;">⚙️ Admin</button>
+        </div>
+        <div class="dashboard-user">
+          <span id="userName" style="font-size:0.85rem;"></span>
+          <span id="adminBadge" style="display:none;font-size:0.7rem;background:rgba(0,174,239,0.15);color:var(--c-cyan);border:1px solid rgba(0,174,239,0.3);border-radius:100px;padding:3px 10px;letter-spacing:0.08em;">ADMIN</span>
+          <button class="btn-logout" id="logoutBtn">Salir</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="dashboard-content">
+
+      <!-- TAB INICIO -->
+      <div class="tab-panel active" id="tab-inicio">
+        <div class="welcome-banner">
+          <div>
+            <h2>Hola, <span id="welcomeName">—</span> 👋</h2>
+            <p id="welcomeSub">Esta es tu área personal de transformación.</p>
+          </div>
+          <div id="payStatusBadge"></div>
+        </div>
+        <h3 style="font-family:var(--font-display);font-size:1.2rem;font-weight:400;margin-bottom:20px;color:var(--c-muted);">Contenido gratuito</h3>
+        <div class="content-grid" style="margin-bottom:48px;">
+          <div class="content-card" style="cursor:pointer;" onclick="openModal('claridad')">
+            <div class="content-card-icon">🧠</div>
+            <h4>¿Qué es la claridad mental?</h4>
+            <p>La claridad no es un estado de ánimo. Es una decisión. Descubrí cómo construirla.</p>
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-top:12px;">
+              <span class="tag-free">Gratis</span>
+              <span style="font-size:0.78rem;color:var(--c-cyan);">Leer →</span>
+            </div>
+          </div>
+          <div class="content-card" style="cursor:pointer;" onclick="openModal('diagnostico')">
+            <div class="content-card-icon">🔍</div>
+            <h4>El diagnóstico de tu mente</h4>
+            <p>12 preguntas que revelan exactamente dónde están tus bloqueos mentales.</p>
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-top:12px;">
+              <span class="tag-free">Gratis</span>
+              <span style="font-size:0.78rem;color:var(--c-cyan);">Leer →</span>
+            </div>
+          </div>
+          <div class="content-card" style="cursor:pointer;" onclick="openModal('lecturas')">
+            <div class="content-card-icon">📖</div>
+            <h4>Lectura recomendada</h4>
+            <p>Los 3 libros que cambiaron la perspectiva del fundador de Clarity.</p>
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-top:12px;">
+              <span class="tag-free">Gratis</span>
+              <span style="font-size:0.78rem;color:var(--c-cyan);">Leer →</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- MODAL DE CONTENIDO GRATUITO -->
+        <div id="contentModal" style="display:none;position:fixed;inset:0;z-index:200;background:rgba(1,8,16,0.92);backdrop-filter:blur(8px);overflow-y:auto;padding:40px 20px;">
+          <div style="max-width:720px;margin:0 auto;background:var(--c-card);border:1px solid var(--c-border);border-radius:24px;padding:48px 40px;position:relative;">
+            <button onclick="closeModal()" style="position:absolute;top:20px;right:24px;background:rgba(0,174,239,0.1);border:1px solid var(--c-border);color:var(--c-muted);width:36px;height:36px;border-radius:50%;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;">✕</button>
+            <div id="modalContent"></div>
+          </div>
+        </div>
+        <div id="premiumSection"></div>
+      </div>
+
+      <!-- TAB CONTENIDO -->
+      <div class="tab-panel" id="tab-contenido">
+        <div id="contentSection"></div>
+      </div>
+
+      <!-- TAB ADMIN -->
+      <div class="tab-panel" id="tab-admin">
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;margin-bottom:40px;">
+          <div class="content-card" style="text-align:center;">
+            <div style="font-family:var(--font-display);font-size:3rem;font-weight:300;color:var(--c-cyan);" id="statTotal">—</div>
+            <div style="font-size:0.82rem;color:var(--c-muted);margin-top:4px;">Usuarios totales</div>
+          </div>
+          <div class="content-card" style="text-align:center;">
+            <div style="font-family:var(--font-display);font-size:3rem;font-weight:300;color:var(--c-blue);" id="statPaid">—</div>
+            <div style="font-size:0.82rem;color:var(--c-muted);margin-top:4px;">Usuarios premium</div>
+          </div>
+          <div class="content-card" style="text-align:center;">
+            <div style="font-family:var(--font-display);font-size:3rem;font-weight:300;color:#4ade80;" id="statFree">—</div>
+            <div style="font-size:0.82rem;color:var(--c-muted);margin-top:4px;">Usuarios gratuitos</div>
+          </div>
+        </div>
+
+        <div class="admin-section">
+          <h3>📄 Subir contenido premium</h3>
+          <div class="upload-zone" id="uploadZone">
+            <input type="file" id="pdfFile" accept=".pdf,.doc,.docx" />
+            <div class="upload-icon">📄</div>
+            <p><strong>Arrastrá un archivo o hacé click aquí</strong><br/>PDF, DOC, DOCX hasta 20MB</p>
+          </div>
+          <div id="uploadStatus" style="margin-top:12px;font-size:0.875rem;color:var(--c-cyan);display:none;padding:10px 16px;background:rgba(0,174,239,0.06);border-radius:8px;border:1px solid rgba(0,174,239,0.15);"></div>
+          <div style="margin-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+            <div class="form-group" style="margin:0;">
+              <label for="contentTitle">Título</label>
+              <input type="text" id="contentTitle" placeholder="Ej: Módulo 3 — Perspectiva financiera" />
+            </div>
+            <div class="form-group" style="margin:0;">
+              <label for="contentDesc">Descripción</label>
+              <input type="text" id="contentDesc" placeholder="Descripción corta" />
+            </div>
+          </div>
+          <button class="btn-primary" id="uploadBtn" type="button" style="margin-top:16px;"><span>Subir contenido</span></button>
+        </div>
+
+        <div class="admin-section">
+          <h3>📬 Enviar recurso a usuario</h3>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+            <div class="form-group" style="margin:0;">
+              <label>Email del usuario</label>
+              <input type="email" id="recipientEmail" placeholder="usuario@email.com" />
+            </div>
+            <div class="form-group" style="margin:0;">
+              <label>WhatsApp (con código país)</label>
+              <input type="tel" id="recipientPhone" placeholder="+54911XXXXXXXX" />
+            </div>
+          </div>
+          <div style="display:flex;gap:12px;margin-top:16px;flex-wrap:wrap;">
+            <button class="btn-secondary" id="sendEmailBtn" type="button">📧 Enviar por Email</button>
+            <button class="btn-secondary" id="sendWhatsappBtn" type="button">💬 Enviar por WhatsApp</button>
+          </div>
+          <div id="sendStatus" style="margin-top:12px;font-size:0.875rem;display:none;padding:10px 16px;background:rgba(0,174,239,0.06);border-radius:8px;border:1px solid rgba(0,174,239,0.15);color:var(--c-cyan);"></div>
+        </div>
+
+        <div class="admin-section">
+          <h3>👥 Usuarios registrados</h3>
+          <div id="usersList"><div style="color:var(--c-muted);font-size:0.875rem;padding:20px 0;">Cargando usuarios…</div></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="config.js"></script>
+  <script>
+    const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    let currentUser = null;
+    let userProfile = null;
+
+    function setLoadingMsg(msg) {
+      const el = document.getElementById('loadingMsg');
+      if (el) el.textContent = msg;
+    }
+
+    function applyAdminUI() {
+      // Forzar conversión explícita a boolean
+      const isAdmin = userProfile.is_admin === true
+                   || userProfile.is_admin === 'true'
+                   || userProfile.is_admin === 1;
+
+      console.log('applyAdminUI — is_admin raw:', userProfile.is_admin, '→ parsed:', isAdmin);
+
+      if (isAdmin) {
+        document.getElementById('adminTabBtn').style.display = 'inline-block';
+        document.getElementById('adminBadge').style.display  = 'inline-block';
+        document.getElementById('welcomeSub').textContent =
+          'Panel de administración activo. Usá la pestaña ⚙️ Admin para gestionar el sitio.';
+        loadAdminData();
+      }
+    }
+
+    // ── INIT ─────────────────────────────────────────────
+    async function init() {
+      setLoadingMsg('Verificando sesión…');
+
+      // Timeout de seguridad — si algo falla, redirige al login en 10 segundos
+      const safetyTimeout = setTimeout(() => {
+        console.error('Timeout al cargar sesión');
+        document.getElementById('loadingMsg').innerHTML =
+          '⚠️ Tiempo de espera agotado.<br><a href="login.html" style="color:var(--c-cyan);">Ir al login</a>';
+      }, 10000);
+
+      try {
+        // Verificar claves de config.js
+        if (!SUPABASE_URL || SUPABASE_URL.includes('TUPROYECTO') || !SUPABASE_ANON_KEY || SUPABASE_ANON_KEY.length < 20) {
+          clearTimeout(safetyTimeout);
+          document.getElementById('loadingMsg').innerHTML =
+            '⚠️ El archivo config.js no tiene las claves de Supabase configuradas.';
+          return;
+        }
+
+        const { data: { session }, error: sessionError } = await sb.auth.getSession();
+
+        if (sessionError || !session) {
+          clearTimeout(safetyTimeout);
+          window.location.href = 'login.html';
+          return;
+        }
+
+        currentUser = session.user;
+        setLoadingMsg('Cargando tu perfil…');
+
+        let profile = null;
+        for (let i = 0; i < 3; i++) {
+          const { data } = await sb
+            .from('profiles')
+            .select('id, full_name, email, has_paid, is_admin, phone, created_at')
+            .eq('id', currentUser.id)
+            .maybeSingle();
+          if (data) { profile = data; break; }
+          await new Promise(r => setTimeout(r, 600));
+        }
+
+        if (!profile) {
+          setLoadingMsg('Preparando tu perfil…');
+          const { data: created } = await sb
+            .from('profiles')
+            .upsert({
+              id: currentUser.id,
+              email: currentUser.email,
+              full_name: currentUser.user_metadata?.full_name || currentUser.email.split('@')[0],
+              has_paid: false,
+              is_admin: false
+            }, { onConflict: 'id' })
+            .select()
+            .single();
+          profile = created || { id: currentUser.id, email: currentUser.email, is_admin: false, has_paid: false };
+        }
+
+        userProfile = profile;
+        console.log('Perfil:', { email: userProfile.email, is_admin: userProfile.is_admin, has_paid: userProfile.has_paid });
+
+        const name = userProfile.full_name || currentUser.email.split('@')[0];
+        document.getElementById('userName').textContent = name;
+        document.getElementById('welcomeName').textContent = name;
+
+        applyAdminUI();
+        renderPremiumSection();
+        renderContentTab();
+
+        clearTimeout(safetyTimeout);
+        document.getElementById('loadingState').style.display = 'none';
+        document.getElementById('app').style.display = 'block';
+
+      } catch(err) {
+        clearTimeout(safetyTimeout);
+        console.error('Error en init():', err);
+        document.getElementById('loadingMsg').innerHTML =
+          `⚠️ Error al cargar: ${err.message}<br><br><a href="login.html" style="color:var(--c-cyan);">Ir al login</a>`;
+      }
+    }
+    // ── INIT ─────────────────────────────────────────────
+    async function init() {
+      setLoadingMsg('Verificando sesión…');
+
+      const { data: { session } } = await sb.auth.getSession();
+      if (!session) { window.location.href = 'login.html'; return; }
+      currentUser = session.user;
+
+      setLoadingMsg('Cargando tu perfil…');
+
+      // Intentar cargar perfil hasta 4 veces
+      let profile = null;
+      let lastError = null;
+      for (let i = 0; i < 4; i++) {
+        const { data, error } = await sb
+          .from('profiles')
+          .select('id, full_name, email, has_paid, is_admin, phone, created_at')
+          .eq('id', currentUser.id)
+          .maybeSingle();   // maybeSingle no lanza error si no existe
+
+        if (data) { profile = data; break; }
+        lastError = error;
+        setLoadingMsg(`Cargando perfil… intento ${i+2}`);
+        await new Promise(r => setTimeout(r, 700));
+      }
+
+      // Si todavía no existe, crear perfil base
+      if (!profile) {
+        setLoadingMsg('Creando tu perfil…');
+        const { data: created } = await sb
+          .from('profiles')
+          .upsert({
+            id: currentUser.id,
+            email: currentUser.email,
+            full_name: currentUser.user_metadata?.full_name || currentUser.email.split('@')[0],
+            has_paid: false,
+            is_admin: false
+          }, { onConflict: 'id' })
+          .select()
+          .single();
+        profile = created || { id: currentUser.id, email: currentUser.email, is_admin: false, has_paid: false };
+      }
+
+      userProfile = profile;
+
+      // Log detallado en consola para diagnóstico
+      console.group('🔍 Clarity — Diagnóstico de perfil');
+      console.log('User ID:', currentUser.id);
+      console.log('Email:', currentUser.email);
+      console.log('Perfil completo:', userProfile);
+      console.log('is_admin:', userProfile.is_admin, '| tipo:', typeof userProfile.is_admin);
+      console.log('has_paid:', userProfile.has_paid);
+      console.groupEnd();
+
+      // Mostrar diagnóstico en pantalla si is_admin es true en DB pero no se ve la pestaña
+      const isAdmin = userProfile.is_admin === true || userProfile.is_admin === 'true';
+      if (!isAdmin) {
+
+      const name = userProfile.full_name || currentUser.email.split('@')[0];
+      document.getElementById('userName').textContent = name;
+      document.getElementById('welcomeName').textContent = name;
+
+      applyAdminUI();
+      renderPremiumSection();
+      renderContentTab();
+
+      document.getElementById('loadingState').style.display = 'none';
+      document.getElementById('app').style.display = 'block';
+    }
+
+    // ── PREMIUM ──────────────────────────────────────────
+    function renderPremiumSection() {
+      const hasPaid = userProfile.has_paid || userProfile.is_admin === true;
+      const badge = document.getElementById('payStatusBadge');
+      const el = document.getElementById('premiumSection');
+      if (hasPaid) {
+        badge.innerHTML = `<span class="tag-premium" style="font-size:0.8rem;padding:6px 16px;">✓ Premium activo</span>`;
+        el.innerHTML = `<h3 style="font-family:var(--font-display);font-size:1.2rem;font-weight:400;margin-bottom:20px;color:var(--c-cyan);">Contenido Premium</h3>${premiumCards()}`;
+      } else {
+        badge.innerHTML = `<span class="tag-free" style="font-size:0.8rem;padding:6px 16px;">Plan gratuito</span>`;
+        el.innerHTML = `<div class="lock-banner">
+          <div class="lock-icon">🔒</div>
+          <h3>Desbloqueá el contenido completo</h3>
+          <p>Por $9/mes accedés a todos los módulos, PDFs y recursos exclusivos de Clarity.</p>
+          <button class="btn-primary" id="payBtn" type="button"><span>Suscribirme ahora — $9/mes</span></button>
+          <p style="margin-top:16px;font-size:0.78rem;color:var(--c-muted);opacity:0.7;">Podés cancelar cuando quieras.</p>
+        </div>`;
+        document.getElementById('payBtn').addEventListener('click', initPago);
+      }
+    }
+
+    function renderContentTab() {
+      const hasPaid = userProfile.has_paid || userProfile.is_admin === true;
+      const el = document.getElementById('contentSection');
+      if (hasPaid) {
+        el.innerHTML = `<h3 style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;margin-bottom:24px;">Todos los módulos</h3>${premiumCards()}`;
+      } else {
+        el.innerHTML = `<div class="lock-banner">
+          <div class="lock-icon">🔒</div>
+          <h3>Sección para miembros</h3>
+          <p>Activá tu suscripción para acceder a todos los módulos.</p>
+          <button class="btn-primary" id="payBtn2" type="button">Activar suscripción</button>
+        </div>`;
+        document.getElementById('payBtn2')?.addEventListener('click', initPago);
+      }
+    }
+
+    function premiumCards() {
+      return `<div class="content-grid">${[
+        {icon:'💡',title:'Módulo 1 — El despertar',desc:'Cómo tu relación con el dinero fue moldeada y cómo cambiarla.'},
+        {icon:'🧭',title:'Módulo 2 — Tu brújula interna',desc:'Identificá tus valores reales y alineá tus decisiones.'},
+        {icon:'💼',title:'Módulo 3 — Perspectiva financiera',desc:'Ver el dinero como energía, no como escasez.'},
+        {icon:'🚀',title:'Módulo 4 — Acción mínima viable',desc:'El sistema para avanzar sin abrumarte.'},
+        {icon:'🛡️',title:'Módulo 5 — Blindaje mental',desc:'Cómo proteger tu mente de voces que te limitan.'},
+        {icon:'📊',title:'Módulo 6 — Hábitos de alto impacto',desc:'Los únicos 3 hábitos que realmente importan.'},
+      ].map(m=>`<div class="content-card"><div class="content-card-icon">${m.icon}</div><h4>${m.title}</h4><p>${m.desc}</p><span class="tag-premium">Premium</span></div>`).join('')}</div>`;
+    }
+
+    async function initPago() {
+      try {
+        const res = await fetch('/api/create-payment', {
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ userId: currentUser.id, userEmail: currentUser.email })
+        });
+        const data = await res.json();
+        if (data.init_point) window.location.href = data.init_point;
+        else alert('No se pudo iniciar el pago: ' + (data.error || 'Error'));
+      } catch(e) { alert('Error al conectar con pago: ' + e.message); }
+    }
+
+    document.getElementById('logoutBtn').addEventListener('click', async () => {
+      await sb.auth.signOut();
+      window.location.href = 'index.html';
+    });
+
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+      });
+    });
+
+    // ── ADMIN: usuarios ──────────────────────────────────
+    async function loadAdminData() {
+      const { data: users, error } = await sb
+        .from('profiles')
+        .select('id, full_name, email, has_paid, is_admin, created_at')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        document.getElementById('usersList').innerHTML = `<p style="color:#ff9999;">Error: ${error.message}</p>`;
+        return;
+      }
+
+      const total = users?.length || 0;
+      const paid  = users?.filter(u => u.has_paid).length || 0;
+      document.getElementById('statTotal').textContent = total;
+      document.getElementById('statPaid').textContent  = paid;
+      document.getElementById('statFree').textContent  = total - paid;
+
+      if (!users?.length) {
+        document.getElementById('usersList').innerHTML = '<p style="color:var(--c-muted);">Sin usuarios aún.</p>';
+        return;
+      }
+
+      document.getElementById('usersList').innerHTML = `
+        <div style="overflow-x:auto;">
+        <table style="width:100%;border-collapse:collapse;font-size:0.85rem;">
+          <thead><tr style="border-bottom:1px solid var(--c-border);">
+            <th style="padding:10px 14px;color:var(--c-muted);font-weight:400;text-align:left;">Nombre</th>
+            <th style="padding:10px 14px;color:var(--c-muted);font-weight:400;text-align:left;">Email</th>
+            <th style="padding:10px 14px;color:var(--c-muted);font-weight:400;text-align:left;">Estado</th>
+            <th style="padding:10px 14px;color:var(--c-muted);font-weight:400;text-align:left;">Fecha</th>
+            <th style="padding:10px 14px;color:var(--c-muted);font-weight:400;text-align:left;">Acción</th>
+          </tr></thead>
+          <tbody>
+            ${users.map(u => `
+              <tr style="border-bottom:1px solid var(--c-border);">
+                <td style="padding:12px 14px;">${u.full_name||'—'}${u.is_admin?'  <span style="font-size:0.65rem;color:var(--c-cyan);border:1px solid rgba(0,174,239,0.3);border-radius:4px;padding:1px 6px;">ADMIN</span>':''}</td>
+                <td style="padding:12px 14px;color:var(--c-muted);">${u.email}</td>
+                <td style="padding:12px 14px;">${u.has_paid?'<span class="tag-premium">Premium</span>':'<span class="tag-free">Gratis</span>'}</td>
+                <td style="padding:12px 14px;color:var(--c-muted);font-size:0.8rem;">${new Date(u.created_at).toLocaleDateString('es-AR')}</td>
+                <td style="padding:12px 14px;">
+                  ${!u.has_paid
+                    ? `<button onclick="togglePremium('${u.id}',true)" style="background:rgba(0,174,239,0.1);color:var(--c-cyan);border:1px solid rgba(0,174,239,0.2);border-radius:6px;padding:4px 12px;font-size:0.75rem;cursor:pointer;">Activar premium</button>`
+                    : `<button onclick="togglePremium('${u.id}',false)" style="background:rgba(255,107,107,0.08);color:#ff9999;border:1px solid rgba(255,107,107,0.2);border-radius:6px;padding:4px 12px;font-size:0.75rem;cursor:pointer;">Revocar</button>`}
+                </td>
+              </tr>`).join('')}
+          </tbody>
+        </table></div>`;
+    }
+
+    async function togglePremium(userId, activate) {
+      if (!activate && !confirm('¿Revocar acceso premium?')) return;
+      const { error } = await sb.from('profiles')
+        .update({ has_paid: activate, ...(activate ? { paid_at: new Date().toISOString() } : {}) })
+        .eq('id', userId);
+      if (!error) loadAdminData();
+      else alert('Error: ' + error.message);
+    }
+
+    // ── ADMIN: Upload ────────────────────────────────────
+    const uploadZone = document.getElementById('uploadZone');
+    uploadZone.addEventListener('click', () => document.getElementById('pdfFile').click());
+    uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.style.borderColor='var(--c-blue)'; });
+    uploadZone.addEventListener('dragleave', () => { uploadZone.style.borderColor=''; });
+    uploadZone.addEventListener('drop', e => { e.preventDefault(); uploadZone.style.borderColor=''; if(e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]); });
+    document.getElementById('pdfFile').addEventListener('change', e => { if(e.target.files[0]) handleFile(e.target.files[0]); });
+
+    let selectedFile = null;
+    function handleFile(f) {
+      selectedFile = f;
+      const el = document.getElementById('uploadStatus');
+      el.textContent = `✓ Seleccionado: ${f.name} (${(f.size/1024/1024).toFixed(2)} MB)`;
+      el.style.display = 'block';
+    }
+
+    document.getElementById('uploadBtn').addEventListener('click', async () => {
+      if (!selectedFile) { alert('Seleccioná un archivo.'); return; }
+      const title = document.getElementById('contentTitle').value.trim();
+      if (!title) { alert('Ingresá un título.'); return; }
+      const btn = document.getElementById('uploadBtn');
+      btn.disabled = true; btn.querySelector('span').textContent = 'Subiendo…';
+      const path = `content/${Date.now()}_${selectedFile.name}`;
+      const { error } = await sb.storage.from('clarity-content').upload(path, selectedFile);
+      if (error) { alert('Error: ' + error.message); btn.disabled=false; btn.querySelector('span').textContent='Subir contenido'; return; }
+      const { data: url } = sb.storage.from('clarity-content').getPublicUrl(path);
+      await sb.from('content_items').insert({ title, description: document.getElementById('contentDesc').value.trim(), file_url: url.publicUrl, file_name: selectedFile.name, is_premium: true, created_at: new Date().toISOString() });
+      document.getElementById('uploadStatus').textContent = '✓ Contenido subido exitosamente.';
+      btn.disabled=false; btn.querySelector('span').textContent='Subir contenido';
+      selectedFile=null; document.getElementById('contentTitle').value=''; document.getElementById('contentDesc').value='';
+    });
+
+    document.getElementById('sendEmailBtn').addEventListener('click', async () => {
+      const email = document.getElementById('recipientEmail').value.trim();
+      if (!email) { alert('Ingresá un email.'); return; }
+      document.getElementById('sendEmailBtn').disabled = true;
+      try {
+        const r = await fetch('/api/send-email', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({to:email}) });
+        const d = await r.json();
+        const s = document.getElementById('sendStatus');
+        s.textContent = d.ok ? '✓ Email enviado.' : '✗ '+d.error;
+        s.style.color = d.ok ? 'var(--c-cyan)' : '#ff9999';
+        s.style.display = 'block';
+      } catch(e) { document.getElementById('sendStatus').textContent='✗ Error de conexión'; document.getElementById('sendStatus').style.display='block'; }
+      document.getElementById('sendEmailBtn').disabled = false;
+    });
+
+    document.getElementById('sendWhatsappBtn').addEventListener('click', async () => {
+      const phone = document.getElementById('recipientPhone').value.trim();
+      if (!phone) { alert('Ingresá un teléfono.'); return; }
+      document.getElementById('sendWhatsappBtn').disabled = true;
+      try {
+        const r = await fetch('/api/send-whatsapp', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({phone}) });
+        const d = await r.json();
+        const s = document.getElementById('sendStatus');
+        s.textContent = d.ok ? '✓ WhatsApp enviado.' : '✗ '+d.error;
+        s.style.color = d.ok ? 'var(--c-cyan)' : '#ff9999';
+        s.style.display = 'block';
+      } catch(e) { document.getElementById('sendStatus').textContent='✗ Error de conexión'; document.getElementById('sendStatus').style.display='block'; }
+      document.getElementById('sendWhatsappBtn').disabled = false;
+    });
+
+    init();
+
+    // ── MODALES CONTENIDO GRATUITO ───────────────────────
+    const modalData = {
+      claridad: {
+        icon: '🧠',
+        tag: '¿Qué es la claridad mental?',
+        title: 'La claridad mental no es un estado de ánimo.<br><em>Es una decisión.</em>',
+        body: `
+          <p>La mayoría de las personas vive en un estado de confusión constante. No porque sean incapaces, sino porque nadie les enseñó a ordenar su mente.</p>
+          <p>Claridad mental es la capacidad de ver tu situación real <strong>sin el ruido del miedo, la comparación o la urgencia</strong>. Es saber exactamente qué querés, por qué lo querés, y cuál es el próximo paso concreto para lograrlo.</p>
+
+          <h4>¿Por qué es tan difícil tenerla?</h4>
+          <p>Vivimos bombardeados de información, opiniones ajenas y presión social. El resultado es una mente saturada que toma decisiones desde el pánico o la parálisis.</p>
+          <p>La claridad no llega sola. Se construye con tres elementos:</p>
+          <ul>
+            <li><strong>Silencio intencional</strong> — apagar el ruido externo aunque sea 15 minutos al día</li>
+            <li><strong>Preguntas correctas</strong> — no "¿por qué me pasa esto?" sino "¿qué puedo hacer hoy con lo que tengo?"</li>
+            <li><strong>Un sistema</strong> — un método repetible que entrene tu mente a enfocarse</li>
+          </ul>
+
+          <div style="background:rgba(0,174,239,0.06);border:1px solid rgba(0,174,239,0.2);border-radius:12px;padding:24px;margin-top:28px;">
+            <strong style="color:var(--c-cyan);font-size:0.8rem;letter-spacing:0.1em;text-transform:uppercase;">✦ Ejercicio de hoy</strong>
+            <p style="margin-top:10px;margin-bottom:0;">Esta noche, antes de dormir, escribí en un papel una sola frase: <em>"Lo que realmente quiero lograr en los próximos 90 días es..."</em> y completala sin censurarte. Lo que escribas en ese momento de calma es tu brújula.</p>
+          </div>`
+      },
+      diagnostico: {
+        icon: '🔍',
+        tag: 'El diagnóstico de tu mente',
+        title: 'Antes de cambiar algo,<br><em>necesitás saber dónde estás parado.</em>',
+        body: `
+          <p>Respondé estas preguntas con honestidad. No hay respuestas correctas ni incorrectas.</p>
+
+          <h4>Bloque 1 — Tu relación con el dinero</h4>
+          <ul>
+            <li>Cuando pensás en dinero, ¿cuál es la primera emoción que sentís? <span style="color:var(--c-muted);font-size:0.85rem;">(miedo, esperanza, culpa, indiferencia)</span></li>
+            <li>¿Creés que el dinero es escaso o abundante en el mundo?</li>
+            <li>¿Cuándo fue la última vez que tomaste una decisión financiera desde la calma, no desde la urgencia?</li>
+          </ul>
+
+          <h4>Bloque 2 — Tu diálogo interno</h4>
+          <ul>
+            <li>¿Cómo te hablás a vos mismo cuando cometés un error?</li>
+            <li>¿Comparás tu situación con la de otros frecuentemente?</li>
+            <li>Cuando algo sale mal, ¿tu primera reacción es buscar culpables externos o analizar qué podés mejorar?</li>
+          </ul>
+
+          <h4>Bloque 3 — Tu capacidad de acción</h4>
+          <ul>
+            <li>¿Tenés una lista de cosas que "deberías hacer" pero llevan semanas sin hacerse?</li>
+            <li>¿Empezás proyectos pero te cuesta terminarlos?</li>
+            <li>¿Sabés exactamente cuál es el próximo paso para mejorar tu situación económica?</li>
+          </ul>
+
+          <h4 style="margin-top:32px;">Interpretá tu diagnóstico</h4>
+          <div style="display:grid;gap:12px;margin-top:16px;">
+            <div style="background:rgba(0,87,184,0.1);border:1px solid rgba(0,87,184,0.25);border-radius:10px;padding:16px;">
+              <strong style="color:var(--c-blue);">Mayoría negativa en Bloque 1</strong>
+              <p style="margin:6px 0 0;font-size:0.875rem;color:var(--c-muted);">Tu bloqueo principal es la <strong style="color:var(--c-text);">mentalidad de escasez</strong>. El Módulo 3 de Clarity es para vos.</p>
+            </div>
+            <div style="background:rgba(0,174,239,0.08);border:1px solid rgba(0,174,239,0.2);border-radius:10px;padding:16px;">
+              <strong style="color:var(--c-cyan);">Mayoría negativa en Bloque 2</strong>
+              <p style="margin:6px 0 0;font-size:0.875rem;color:var(--c-muted);">Tu obstáculo es el <strong style="color:var(--c-text);">diálogo interno</strong>. El Módulo 5 te va a cambiar la perspectiva.</p>
+            </div>
+            <div style="background:rgba(0,212,255,0.06);border:1px solid rgba(0,212,255,0.15);border-radius:10px;padding:16px;">
+              <strong style="color:var(--c-cyan);">Mayoría negativa en Bloque 3</strong>
+              <p style="margin:6px 0 0;font-size:0.875rem;color:var(--c-muted);">El problema es la <strong style="color:var(--c-text);">parálisis por análisis</strong>. El Módulo 4 te da el sistema exacto para salir de ahí.</p>
+            </div>
+          </div>`
+      },
+      lecturas: {
+        icon: '📖',
+        tag: 'Lecturas recomendadas',
+        title: 'Tres libros que no te harán rico.<br><em>Te cambiarán la forma de pensar.</em>',
+        body: `
+          <p style="color:var(--c-muted);margin-bottom:32px;">Y eso lo cambia todo.</p>
+
+          <div style="border:1px solid var(--c-border);border-radius:14px;padding:28px;margin-bottom:20px;position:relative;overflow:hidden;">
+            <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(to right,var(--c-deepblue),var(--c-blue));"></div>
+            <div style="display:flex;align-items:flex-start;gap:16px;">
+              <div style="font-size:2.2rem;flex-shrink:0;">📗</div>
+              <div>
+                <p style="font-size:0.72rem;color:var(--c-cyan);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:6px;">Libro 1</p>
+                <h4 style="font-family:var(--font-display);font-size:1.3rem;font-weight:400;margin-bottom:4px;">"El hombre más rico de Babilonia"</h4>
+                <p style="font-size:0.82rem;color:var(--c-muted);margin-bottom:12px;">George S. Clason</p>
+                <p style="font-size:0.9rem;color:var(--c-muted);line-height:1.7;">Un clásico de 1926 escrito en forma de parábolas. Enseña principios simples y poderosos sobre el dinero que siguen siendo devastadoramente relevantes.</p>
+                <div style="background:rgba(0,174,239,0.06);border-radius:8px;padding:12px 16px;margin-top:14px;">
+                  <p style="font-size:0.85rem;margin:0;"><strong style="color:var(--c-cyan);">Idea central:</strong> <span style="color:var(--c-muted);">Una parte de todo lo que ganás te pertenece a vos. No al alquiler, no a las deudas. A vos. Guardar el 10% de cada ingreso, siempre, sin excepción.</span></p>
+                </div>
+                <p style="font-size:0.85rem;color:var(--c-muted);margin-top:12px;"><strong style="color:var(--c-text);">Por qué leerlo:</strong> Desmonta la creencia de que el problema es cuánto ganás. Casi siempre es cómo administrás lo que ya tenés.</p>
+              </div>
+            </div>
+          </div>
+
+          <div style="border:1px solid var(--c-border);border-radius:14px;padding:28px;margin-bottom:20px;position:relative;overflow:hidden;">
+            <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(to right,var(--c-blue),var(--c-cyan));"></div>
+            <div style="display:flex;align-items:flex-start;gap:16px;">
+              <div style="font-size:2.2rem;flex-shrink:0;">📘</div>
+              <div>
+                <p style="font-size:0.72rem;color:var(--c-cyan);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:6px;">Libro 2</p>
+                <h4 style="font-family:var(--font-display);font-size:1.3rem;font-weight:400;margin-bottom:4px;">"Mindset: La actitud del éxito"</h4>
+                <p style="font-size:0.82rem;color:var(--c-muted);margin-bottom:12px;">Carol S. Dweck</p>
+                <p style="font-size:0.9rem;color:var(--c-muted);line-height:1.7;">La investigadora de Stanford que descubrió la diferencia entre la mentalidad fija y la de crecimiento. Te hace ver tus propios patrones como si fuera la primera vez.</p>
+                <div style="background:rgba(0,174,239,0.06);border-radius:8px;padding:12px 16px;margin-top:14px;">
+                  <p style="font-size:0.85rem;margin:0;"><strong style="color:var(--c-cyan);">Idea central:</strong> <span style="color:var(--c-muted);">Las personas con mentalidad fija creen que sus capacidades son estáticas. Las de crecimiento saben que todo se puede desarrollar con esfuerzo y estrategia.</span></p>
+                </div>
+                <p style="font-size:0.85rem;color:var(--c-muted);margin-top:12px;"><strong style="color:var(--c-text);">Por qué leerlo:</strong> Si creés que "no naciste para ganar dinero", este libro va a desarmar esa creencia ladrillo por ladrillo.</p>
+              </div>
+            </div>
+          </div>
+
+          <div style="border:1px solid var(--c-border);border-radius:14px;padding:28px;position:relative;overflow:hidden;">
+            <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(to right,var(--c-cyan),#ffffff44);"></div>
+            <div style="display:flex;align-items:flex-start;gap:16px;">
+              <div style="font-size:2.2rem;flex-shrink:0;">📙</div>
+              <div>
+                <p style="font-size:0.72rem;color:var(--c-cyan);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:6px;">Libro 3</p>
+                <h4 style="font-family:var(--font-display);font-size:1.3rem;font-weight:400;margin-bottom:4px;">"Los 4 acuerdos"</h4>
+                <p style="font-size:0.82rem;color:var(--c-muted);margin-bottom:12px;">Miguel Ruiz</p>
+                <p style="font-size:0.9rem;color:var(--c-muted);line-height:1.7;">Basado en la sabiduría tolteca. Cuatro principios que, si los aplicás en serio, reorganizan completamente tu relación con vos mismo y con los demás.</p>
+                <div style="background:rgba(0,174,239,0.06);border-radius:8px;padding:12px 16px;margin-top:14px;">
+                  <p style="font-size:0.85rem;margin:0;"><strong style="color:var(--c-cyan);">Idea central:</strong> <span style="color:var(--c-muted);">La mayor parte del sufrimiento humano viene de acuerdos que hicimos con nosotros mismos en la infancia y que nunca cuestionamos.</span></p>
+                </div>
+                <p style="font-size:0.85rem;color:var(--c-muted);margin-top:12px;"><strong style="color:var(--c-text);">Por qué leerlo:</strong> Antes de cambiar tu situación económica necesitás cambiar los acuerdos internos que te dicen que no podés, que no merecés, o que es muy tarde.</p>
+              </div>
+            </div>
+          </div>`
+      }
+    };
+
+    function openModal(key) {
+      const d = modalData[key];
+      if (!d) return;
+      document.getElementById('modalContent').innerHTML = `
+        <p style="font-size:0.72rem;color:var(--c-cyan);letter-spacing:0.14em;text-transform:uppercase;margin-bottom:16px;">${d.icon} ${d.tag}</p>
+        <h2 style="font-family:var(--font-display);font-size:clamp(1.6rem,3vw,2.2rem);font-weight:300;line-height:1.25;margin-bottom:28px;">${d.title}</h2>
+        <div style="color:var(--c-muted);line-height:1.8;font-size:0.95rem;">
+          <style scoped>
+            h4{font-family:var(--font-display);font-size:1.15rem;font-weight:400;color:var(--c-text);margin:24px 0 10px;}
+            ul{padding-left:0;list-style:none;}
+            ul li{padding:8px 0 8px 20px;border-bottom:1px solid var(--c-border);position:relative;font-size:0.9rem;}
+            ul li::before{content:"→";position:absolute;left:0;color:var(--c-blue);}
+            ul li:last-child{border-bottom:none;}
+            p{margin-bottom:14px;}
+            strong{color:var(--c-text);}
+          </style>
+          ${d.body}
+        </div>
+        <div style="margin-top:36px;padding-top:24px;border-top:1px solid var(--c-border);text-align:center;">
+          <p style="font-family:var(--font-display);font-style:italic;color:var(--c-muted);margin-bottom:20px;">¿Querés ir más profundo?</p>
+          <button onclick="closeModal()" class="btn-primary"><span>Volver al dashboard</span></button>
+        </div>`;
+      document.getElementById('contentModal').style.display = 'block';
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+      document.getElementById('contentModal').style.display = 'none';
+      document.body.style.overflow = '';
+    }
+
+    // Cerrar modal con Escape
+    document.addEventListener('keydown', e => { if(e.key === 'Escape') closeModal(); });
+    // Cerrar modal al clickear el fondo
+    document.getElementById('contentModal').addEventListener('click', function(e) {
+      if(e.target === this) closeModal();
+    });
+
+  </script>
+</body>
+</html>
